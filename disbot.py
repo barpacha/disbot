@@ -16,10 +16,6 @@ async def on_message(message):
         for voice in voices:
             if voice.name == lg:
                 tts.setProperty('voice', voice.id)
-
-
-
-
         voice = await message.author.voice.channel.connect(reconnect = True)
         if voice.is_connected():
             tts.save_to_file(message.content[1:], 'botsay.mp3')
@@ -28,4 +24,11 @@ async def on_message(message):
             while voice.is_playing():
                 await asyncio.sleep(1)
             await voice.disconnect()
+            message.delete()
+    else:
+        if message.content == 'stop' and not bot.voice_clients is None:
+            voice = await message.author.voice.channel.connect(reconnect=True)
+            voice.stop()
+            await voice.disconnect()
+            message.delete()
 bot.run(TOKEN)
