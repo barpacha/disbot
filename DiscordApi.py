@@ -61,7 +61,7 @@ class MyClient:
                     try:
                         voice_channel = await channel.connect()
                     except:
-                        if t > time.time() - 300:
+                        if t < time.time() - 300:
                             return
                         else:
                             retry = True
