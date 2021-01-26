@@ -1,9 +1,6 @@
 import os
 import requests
 
-#необходимы папки: saved, tmp
-
-
 def delete_file(file:str):
     os.remove(file)
 

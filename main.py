@@ -5,7 +5,7 @@ import os
 import sys
 
 async def main():
-    bot = DiscordApi.MyClient('NzMzMDA1MDYyNDQ3ODI1MDA3.Xw82KQ.nXIeG_Xievu-d6lcKr6Bq5Spjjo', discord_command.default_handler) #Bot Token
+    bot = DiscordApi.MyClient('TOKEN', discord_command.default_handler)
     await bot.start()
     print('ready')
     while True:

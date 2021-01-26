@@ -45,8 +45,11 @@ class MsgParser:
     async def kazino(bot: DiscordApi.MyClient, message: discord.message):
         await discord_command.kazino(bot, message)
 
-    dc = [stop, voices, saved, off, help, ping, ping, kazino]
-    dctext = ['stop', 'voices', 'saved', 'off', 'help', 'ping', '<:ping:798579897726926938>', 'казино']
+    async def bagoga(bot: DiscordApi.MyClient, message: discord.message):
+        await discord_command.bagoga(bot, message)
+
+    dc = [stop, voices, saved, off, help, ping, ping, kazino, bagoga]
+    dctext = ['stop', 'voices', 'saved', 'off', 'help', 'ping', '<:ping:798579897726926938>', 'казино', '<:bazozda:803347064904876072>']
 
     def __init__(self, message:discord.message, client:DiscordApi.MyClient):
         text = message.content

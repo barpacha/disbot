@@ -1,6 +1,7 @@
 import discord
 import asyncio
 import fileManager
+import time
 
 class MyClient:
     dialog = []
@@ -52,9 +53,19 @@ class MyClient:
     async def append_playlist(self, channel:discord.VoiceChannel, file):
         if not self.playlist.__contains__(channel.id) or len(self.playlist[channel.id]) == 0:
             self.playlist[channel.id] = [file]
-
             async def pl():
-                voice_channel = await channel.connect()
+                t = time.time()
+                retry = True
+                while retry:
+                    retry = False
+                    try:
+                        voice_channel = await channel.connect()
+                    except:
+                        if t > time.time() - 300:
+                            return
+                        else:
+                            retry = True
+                            await asyncio.sleep(1)
                 await self.play(voice_channel, channel)
                 await voice_channel.disconnect()
             asyncio.create_task(pl())

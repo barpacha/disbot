@@ -48,6 +48,10 @@ async def kazino(bot, message):
     await asyncio.sleep(180)
     await message.delete()
 
+async def bagoga(bot, message):
+    message.content = r'$[f бажожда]'
+    await default_handler(bot, message)
+
 async def default_handler(bot, message):
     if message.content == '':
         return
