@@ -10,7 +10,6 @@ import fileManager
 
 class MsgParser:
     prefix = '$'
-
     voice_command = {
         r'\[v \d{1,3}\]': 'volume',
         r'\[p \d{1,3}\]': 'pitch_voice',
@@ -21,35 +20,8 @@ class MsgParser:
         r'\[ch [^\]]{1,50}\]':'channel'
     }
     voice_file = r'\[f [^\]]{1,20}\]'
-
-
-
-    async def stop(bot:DiscordApi.MyClient, message:discord.message):
-        await discord_command.stop(bot, message)
-
-    async def voices(bot:DiscordApi.MyClient, message:discord.message):
-        await discord_command.voices(bot, message)
-
-    async def saved(bot:DiscordApi.MyClient, message:discord.message):
-        await discord_command.saved(bot, message)
-
-    async def off(bot:DiscordApi.MyClient, message:discord.message):
-        await discord_command.off(bot, message)
-
-    async def help(bot:DiscordApi.MyClient, message:discord.message):
-        await discord_command.help(bot, message)\
-
-    async def ping(bot: DiscordApi.MyClient, message: discord.message):
-        await discord_command.ping(bot, message)
-
-    async def kazino(bot: DiscordApi.MyClient, message: discord.message):
-        await discord_command.kazino(bot, message)
-
-    async def bagoga(bot: DiscordApi.MyClient, message: discord.message):
-        await discord_command.bagoga(bot, message)
-
-    dc = [stop, voices, saved, off, help, ping, ping, kazino, bagoga]
-    dctext = ['stop', 'voices', 'saved', 'off', 'help', 'ping', '<:ping:798579897726926938>', 'казино', '<:bazozda:803347064904876072>']
+    dc = []
+    dctext = []
 
     def __init__(self, message:discord.message, client:DiscordApi.MyClient):
         text = message.content
@@ -114,3 +86,6 @@ class MsgParser:
             except:
                 pass
 
+    def add_handler(self, coro, text:str):
+        self.dctext.append(text)
+        self.dc.append(coro)
