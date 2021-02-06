@@ -9,6 +9,7 @@ import random
 def append_handler(parser:MsgParser.MsgParser):
     async def stop(bot, message):
         bot.playing[message.author.voice.channel.id] = None
+        await message.delete()
     parser.add_handler(stop, 'stop')
 
     async def voices(bot, message):
@@ -49,7 +50,7 @@ def append_handler(parser:MsgParser.MsgParser):
     parser.add_handler(saved, 'saved')
 
     async def kazino(bot, message):
-        if random.randint(0, 1) == 1:
+        if random.randint(0, 3) == 1:
             await bot.send(message.channel, 'вы выиграли', delete_after=180)
         else:
             await bot.send(message.channel, 'вы проиграли', delete_after=180)
@@ -68,7 +69,12 @@ def append_handler(parser:MsgParser.MsgParser):
         print(message.content)
     parser.add_handler(test, 'test')
 
-
+    async def fast_f(bot, message):
+        await message.delete()
+        message = await bot.wait_msg(message.author,120)
+        message.content = r'$[f ' + message.content  + ']'
+        await default_handler(bot, message)
+    parser.add_handler(fast_f, 'f')
 
     return parser
 

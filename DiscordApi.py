@@ -87,7 +87,7 @@ class MyClient:
                     await voice_channel.disconnect()
                     self.playlist[channel.id].clear()
                     return
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.05)
             if file[:3] == 'tmp':
                 fileManager.delete_file(file)
             self.playlist[channel.id].pop(0)
