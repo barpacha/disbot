@@ -28,7 +28,53 @@ def append_handler(parser:MsgParser.MsgParser):
     parser.add_handler(off, 'off')
 
     async def help(bot, message):
-        text = '$ перед воспроизводимым сообщением\nтег - [название значение]\nтеги:\nv - Громкость\np - высота голоса\ns - скорость воспроизведения\nch - канал\nvc - голос\nf - воспроизведение файла\n\nкоманды:\nvoices - голоса\nsaved - сохраненные записи\nstop - прекратить воспроизведение\n\nдля добавления записей необходимо отправить файл mp3/wav в личку боту, в комментариях к файлу указать имя записи.'
+        text = '''Бот для проигрыша фраз и озвучки текста. НЕ ДЛЯ МУЗЫКИ!
+Бот работает только когда barpacha онлайн!
+
+Добавить фразу:
+1) Отправить файл .mp3/.wav в личку боту
+2) При отправке написать название фразы (любое, нужно для проигрывания и привязки к смайлам)
+
+Удалить фразу:
+1) Первое сообщение в чат на сервере remove
+2) Второе сообщение название фразы
+(привязка удаляется автоматически)
+
+Воспроизвести фразу: 
+1) Первое сообщение в чат на сервере f 
+2) Второе сообщение название фразы
+
+Привязка к смайлам:
+1) Первым сообением в чат на сервере написать bind
+2) Вторым сообщением ввести смайл или любой текст
+3) Третьим сообщением ввести название фразы
+
+Удаление привязки:
+1) Первое сообщение - dbind
+2) Второе сообщение - привязанный смайл или текст (НЕ НАЗВАНИЕ ФРАЗЫ!)
+
+Озвучить текст:
+$ перед воспроизводимым сообщением
+Можно использовать теги [тег значение]
+Список тегов (1-3 в процентах от 0 до 100):
+1) v - громкость (работает только для озвучки текста)
+2) p - высота голоса (работает только для озвучки текста)
+3) s - скорость воспроизведения (работает только для озвучки текста)
+4) ch - канал (там где ДРУГИЕ ИГОРЫ)
+5) vc - голос (дословно из списка voices)
+6) f - воспроизведение фразы из файла
+
+Пример использования: $[f frog][v 100]захлопнулась
+Воспроизведет фразу frog(ЛИГУШКА) из файла и слово "захлопнулась" на полной громкости
+
+Другие команды:
+казино - испытай удачу! Выведет победу или проигрыш
+ping - выводит ваш пинг в чат (аналогично смайлу PING)
+stop - прекратить воспроизведение
+voices - отображает доступные голоса озвучки
+pbind - отображает все привязки фраз
+saved - отображает сохраненные фразы
+botsay - saved для Магнера'''
         await bot.send(message.channel, text, delete_after=300)
         await message.delete()
     parser.add_handler(help, 'help')
@@ -48,6 +94,7 @@ def append_handler(parser:MsgParser.MsgParser):
         await bot.send(message.channel, text, delete_after=180)
         await message.delete()
     parser.add_handler(saved, 'saved')
+    parser.add_handler(saved, 'botsay')
 
     async def kazino(bot, message):
         if random.randint(0, 3) == 1:
@@ -58,11 +105,6 @@ def append_handler(parser:MsgParser.MsgParser):
         await message.delete()
     parser.add_handler(kazino, 'казино')
 
-    async def bagoga(bot, message):
-        message.content = r'$[f бажожда]'
-        await default_handler(bot, message)
-    parser.add_handler(bagoga, '<:bazozda:803347064904876072>')
-
     async def test(bot, message):
         await message.delete()
         message = await bot.wait_msg(message.author,60)
@@ -72,10 +114,70 @@ def append_handler(parser:MsgParser.MsgParser):
     async def fast_f(bot, message):
         await message.delete()
         message = await bot.wait_msg(message.author,120)
+        if message == None:
+            return
+        if message.content == '':
+            return
         message.content = r'$[f ' + message.content  + ']'
         await default_handler(bot, message)
     parser.add_handler(fast_f, 'f')
 
+    async def del_file(bot, message):
+        await message.delete()
+        message = await bot.wait_msg(message.author, 120)
+        if message.content == '':
+            return
+        if fileManager.all_files().__contains__(message.content):
+            fileManager.delete_file('saved\\' + message.content)
+            for bind in fileManager.load_binding():
+                if bind['name'] == message.content:
+                    fileManager.del_binding(bind['text'])
+                    break
+            await bot.send(message.channel, 'удалено', delete_after=10)
+    parser.add_handler(del_file, 'remove')
+
+    async def binding(bot, message):
+        await message.delete()
+        message = await bot.wait_msg(message.author, 120)
+        if message.content == '':
+            return
+        text = message.content
+        await message.delete()
+        message = await bot.wait_msg(message.author, 120)
+        if message.content == '':
+            return
+        if not fileManager.all_files().__contains__(message.content):
+            return
+        name_file = message.content
+        await message.delete()
+        fileManager.upload_binding(text, name_file)
+    parser.add_handler(binding, 'bind')
+
+    async def del_binding(bot, message):
+        await message.delete()
+        message = await bot.wait_msg(message.author, 120)
+        if message.content == '':
+            return
+        if fileManager.del_binding(message.content) == True:
+            await bot.send(message.channel, 'удалено', delete_after=5)
+        await message.delete()
+    parser.add_handler(del_binding, 'dbind')
+
+    async def print_binding(bot, message):
+        await message.delete()
+        msg = ''
+        for bind in fileManager.load_binding():
+            msg += bind['text'] + ' ' + bind['name'] + '\n'
+        await bot.send(message.channel, msg, delete_after=120)
+    parser.add_handler(print_binding, 'pbind')
+
+
+
+    for bind in fileManager.load_binding():
+        async def universal(bot, message):
+            message.content = r'$[f ' + fileManager.find_binding(message.content) + ']'
+            await default_handler(bot, message)
+        parser.add_handler(universal, bind['text'])
     return parser
 
 async def default_handler(bot, message):

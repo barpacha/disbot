@@ -1,7 +1,7 @@
 class Talker:
     def __init__(self):
         self.text = ''
-        self.volume = 50
+        self.volume = 80
         self.pitch_voice = 50
         self.voice_speed = 50
         self.voice = 'Microsoft Irina Desktop'
